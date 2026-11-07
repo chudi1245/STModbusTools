@@ -31,12 +31,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # action 内置 setup-python 硬编码 >=3.14, 与 aqtinstall 3.3 不兼容; 自装 3.13
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - name: 安装 Qt 6
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.11.1'
           arch: ${{ matrix.qt-arch }}
           cache: true
+          setup-python: false
 
       - name: 配置
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
