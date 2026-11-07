@@ -36,7 +36,7 @@ jobs:
             os: windows-latest
             qt-arch: win64_msvc2022_64
           - name: macOS (arm64)
-            os: macos-14
+            os: macos-15
             qt-arch: clang_64
     env:
       QT_QPA_PLATFORM: offscreen
@@ -54,6 +54,8 @@ jobs:
         with:
           version: '6.10.3'
           arch: ${{ matrix.qt-arch }}
+          # Qt 6.10+ 默认桌面包不再捆绑串口模块, 需显式加装
+          modules: qtserialbus qtserialport
           cache: true
           setup-python: false
 
