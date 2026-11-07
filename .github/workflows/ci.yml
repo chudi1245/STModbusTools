@@ -1,0 +1,48 @@
+# CI: 双平台 (Windows MSVC / macOS arm64) 自动构建并运行测试。
+# 离屏冒烟 + TCP 回环用例在 CI 可跑; 实机用例无硬件时自动 QSKIP。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows (MSVC)
+            os: windows-latest
+            qt-arch: win64_msvc2022_64
+          - name: macOS (arm64)
+            os: macos-14
+            qt-arch: clang_64
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Qt 6
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          arch: ${{ matrix.qt-arch }}
+          cache: true
+
+      - name: 配置
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: 构建
+        run: cmake --build build --config Release
+
+      - name: 测试
+        run: ctest --test-dir build -C Release --output-on-failure

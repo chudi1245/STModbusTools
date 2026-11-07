@@ -1,0 +1,8 @@
+# 换行规范: 文本文件入库统一 LF (避免跨平台协作出现全文件 diff 噪音);
+# 二进制资源不做任何转换。
+* text=auto
+
+*.png binary
+*.ico binary
+*.icns binary
+*.qm binary

@@ -1,0 +1,49 @@
+# ---- 构建输出目录 ----
+build/
+build-*/
+out/
+cmake-build-*/
+
+# ---- CMake / Ninja 中间文件(若在源码树内生成) ----
+CMakeCache.txt
+CMakeUserPresets.json
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+*.ninja
+.ninja_deps
+.ninja_log
+
+# ---- Qt 生成文件 ----
+*.qm
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*_autogen/
+*.user
+*.user.*
+*.autosave
+
+# ---- 编译产物 ----
+*.obj
+*.o
+*.pdb
+*.ilk
+*.exp
+*.exe
+
+# ---- IDE / 工具工作目录 ----
+.idea/
+.vs/
+.vscode/
+.zcode/
+.codegraph/
+
+# ---- 临时日志 ----
+*.log
+
+# ---- 操作系统杂项 ----
+Thumbs.db
+Desktop.ini
+.DS_Store

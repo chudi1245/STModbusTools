@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon/modbustools.ico</file>
+        <file>icon/modbustools.png</file>
+        <file>resources/app.qss</file>
+    </qresource>
+</RCC>

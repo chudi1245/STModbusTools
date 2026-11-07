@@ -1,0 +1,39 @@
+MinGW-w64 / GCC runtime components shipped with this distribution
+=================================================================
+
+The following compiler runtime DLLs are deployed alongside the
+application (installed by Qt's windeployqt with --compiler-runtime):
+
+  libgcc_s_seh-1.dll   GCC runtime support library
+  libstdc++-6.dll      GNU Standard C++ library
+  libwinpthread-1.dll  MinGW-w64 POSIX threads library (if present)
+
+libgcc_s_seh-1.dll and libstdc++-6.dll are part of GCC and are licensed
+under the GNU General Public License version 3 with the GCC Runtime
+Library Exception (see GPL-3.0-only.txt in this folder and the
+exception text below). Dynamic linking of an executable against these
+libraries, and distribution of the binaries, is permitted under the
+exception's terms.
+
+libwinpthread-1.dll is part of the MinGW-w64 project runtime and is
+distributed under a permissive license (MIT-style, see the MinGW-w64
+project for the full text).
+
+Excerpts — GCC Runtime Library Exception, version 3.1, 31 March 2009
+---------------------------------------------------------------------
+
+As a special exception, the copyright holders of this library give you
+permission to convey a resulting work that corresponds to a source
+form of this library containing covered works, link a library with the
+library, or combine a library with other material to form a larger
+library, and convey that library, together with a resulting work that
+corresponds to a source form of the combined library, without being
+bound by the terms of the GNU General Public License.
+
+The full text of the GCC Runtime Library Exception version 3.1 is
+available at: https://www.gnu.org/licenses/gcc-exception-3.1.html
+
+SQLite
+------
+The SQLite database engine embedded in the Qt SQL driver plugin
+(qsqlite.dll) is in the public domain: https://www.sqlite.org/copyright.html

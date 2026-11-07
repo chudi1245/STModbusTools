@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Mac App Store 要求启用 App Sandbox -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+    <!-- Modbus RTU: 打开 /dev/cu.* /dev/tty.* 串口设备 -->
+    <key>com.apple.security.device.serial</key>
+    <true/>
+    <!-- USB 转 RS485/RS232 适配器 -->
+    <key>com.apple.security.device.usb</key>
+    <true/>
+    <!-- Modbus TCP: 出站 TCP 连接 (QTcpSocket 主站) -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <!-- 工作区 JSON 打开/保存、CSV 导出、数据记录文件 (经系统文件对话框授权) -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+</dict>
+</plist>
