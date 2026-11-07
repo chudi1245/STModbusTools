@@ -1,0 +1,90 @@
+# Release: 推送 v* 标签自动构建并发布。
+#   先 create-release 建好 Release (避免双 job 并行创建竞态), 再两平台并行
+#   构建 → ctest 质量门 → 打包 → 产物上传到同一 Release。
+#   发版流程: 根 CMakeLists 改 project(VERSION) → 打对齐的 v 标签 → 推送即发布。
+#   标签须与 project(VERSION) 一致 (v1.2.3 ↔ 1.2.3), 否则校验步骤拦截。
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: 创建 Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: STModbusTools ${{ github.ref_name }}
+          generate_release_notes: true
+
+  build-release:
+    name: ${{ matrix.name }}
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows (MSVC)
+            os: windows-latest
+            qt-arch: win64_msvc2022_64
+          - name: macOS (arm64)
+            os: macos-14
+            qt-arch: clang_64
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Qt 6
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          arch: ${{ matrix.qt-arch }}
+          cache: true
+
+      - name: 校验标签与 project(VERSION) 一致
+        shell: bash
+        run: |
+          VER=$(sed -nE 's/^project\([^)]*VERSION ([0-9.]+).*/\1/p' CMakeLists.txt | head -1)
+          TAG="${GITHUB_REF_NAME#v}"
+          echo "project(VERSION) = $VER, tag = $GITHUB_REF_NAME"
+          if [ "$VER" != "$TAG" ]; then
+            echo "::error::标签 $GITHUB_REF_NAME 与 project(VERSION $VER) 不一致, 请对齐后重打标签"
+            exit 1
+          fi
+
+      - name: 配置
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: 构建 + 测试
+        shell: bash
+        run: |
+          cmake --build build --config Release
+          ctest --test-dir build -C Release --output-on-failure
+
+      # cpack 自带安装规则 (windeployqt 平铺 + LICENSES + qm), 不依赖 dist 目录
+      - name: 打包 Windows (ZIP + NSIS)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: cd build && cpack -C Release
+
+      - name: 打包 macOS (macdeployqt + DMG)
+        if: runner.os == 'macOS'
+        run: cmake --build build --target dist --config Release
+
+      - name: 上传产物到 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/STModbusTools-*-win64.zip
+            build/STModbusTools-*-win64.exe
+            build/STModbusTools-*-macos-arm64.dmg
+          fail_on_unmatched_files: true

@@ -98,7 +98,10 @@ TID 镜像、连接注册表 / 从机在线轮询（回环从机）/ 设备树�
 
 构建约定、目录分层与关键约束见 [AGENTS.md](AGENTS.md)。GitHub Actions
 对 Windows (MSVC) 与 macOS (arm64) 双平台自动构建并运行测试
-（`.github/workflows/ci.yml`）。
+（`.github/workflows/ci.yml`）；发布则在根 CMakeLists 改
+`project(VERSION)` 后推送对齐的 `v*` 标签（如 `v1.1.0`），双平台产物
+（ZIP / NSIS / DMG）自动构建并挂到 GitHub Release
+（`.github/workflows/release.yml`）。
 
 ### 许可
 
@@ -222,7 +225,10 @@ For debugging, a pure-stdlib Modbus TCP simulator is included:
 Build conventions, layering and key constraints are documented in
 [AGENTS.md](AGENTS.md). GitHub Actions builds and tests the project
 automatically on Windows (MSVC) and macOS (arm64)
-(`.github/workflows/ci.yml`).
+(`.github/workflows/ci.yml`). To release: bump `project(VERSION)` in the
+root CMakeLists, then push a matching `v*` tag (e.g. `v1.1.0`) — artifacts
+for both platforms (ZIP / NSIS / DMG) are built automatically and attached
+to the GitHub Release (`.github/workflows/release.yml`).
 
 ### License
 
