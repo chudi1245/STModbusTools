@@ -39,7 +39,7 @@ jobs:
       - name: 安装 Qt 6
         uses: jurplel/install-qt-action@v4
         with:
-          version: '6.11.1'
+          version: '6.10.3'
           arch: ${{ matrix.qt-arch }}
           cache: true
           setup-python: false
