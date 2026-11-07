@@ -79,21 +79,36 @@ jobs:
           cmake --build build --config Release
           ctest --test-dir build -C Release --output-on-failure
 
-      # cpack 自带安装规则 (windeployqt 平铺 + LICENSES + qm), 不依赖 dist 目录
+      # cpack 自带安装规则 (windeployqt 平铺 + LICENSES + qm), 不依赖 dist 目录;
+      # runner 的 NSIS 不在 PATH, configure 时 find_program 找不到 makensis,
+      # 故打包前把它加进 PATH 并重配置 (无 NSIS 时仅出 ZIP, 不阻塞)
       - name: 打包 Windows (ZIP + NSIS)
         if: runner.os == 'Windows'
         shell: bash
-        run: cd build && cpack -C Release
+        run: |
+          if [ -x "/c/Program Files (x86)/NSIS/makensis.exe" ]; then
+            export PATH="/c/Program Files (x86)/NSIS:$PATH"
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          fi
+          cd build && cpack -C Release
 
       - name: 打包 macOS (macdeployqt + DMG)
         if: runner.os == 'macOS'
         run: cmake --build build --target dist --config Release
 
-      - name: 上传产物到 Release
+      # 文件清单分平台各自给出, 避免跨平台 glob 不命中; NSIS exe 为可选产物
+      - name: 上传产物到 Release (Windows)
+        if: runner.os == 'Windows'
         uses: softprops/action-gh-release@v2
         with:
           files: |
             build/STModbusTools-*-win64.zip
             build/STModbusTools-*-win64.exe
-            build/STModbusTools-*-macos-arm64.dmg
-          fail_on_unmatched_files: true
+          fail_on_unmatched_files: false
+
+      - name: 上传产物到 Release (macOS)
+        if: runner.os == 'macOS'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/STModbusTools-*-macos-arm64.dmg
+          fail_on_unmatched_files: false
